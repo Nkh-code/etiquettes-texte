@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Étiquettes texte — Zebra 38 × 25 mm</title>
+    <link rel="icon" href="najm-favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --card-border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --input-focus: #2563eb;
+            --grid-dots: radial-gradient(#cbd5e1 1px, transparent 1px);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+            --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
+        }
+
+        body.dark-mode {
+            --bg: #09090b;
+            --surface: #141417;
+            --card: #141417;
+            --card-border: #27272a;
+            --text: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #3b82f6;
+            --input-bg: #18181b;
+            --input-border: #3f3f46;
+            --input-focus: #3b82f6;
+            --grid-dots: radial-gradient(#27272a 1px, transparent 1px);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.25s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---------- En-tête ---------- */
+        header.app-header {
+            width: 100%;
+            background: var(--surface);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-zone { display: flex; align-items: center; gap: 12px; }
+
+        .brand-logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+        .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+        .brand-subtitle { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 11px;
+            background: var(--bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-full);
+            font-size: 11px; font-weight: 700; color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+        .status-dot.active { background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); }
+        .status-dot.warning { background: var(--warning); }
+
+        .btn-header-action, .theme-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            height: 34px; padding: 0 12px;
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 12px; font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .theme-btn { width: 34px; padding: 0; }
+        .btn-header-action:hover, .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ---------- Mise en page ---------- */
+        main.main-layout {
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: minmax(340px, 420px) 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 22px;
+        }
+
+        .card-title {
+            font-size: 15px; font-weight: 800;
+            margin-bottom: 18px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+
+        .field textarea, .field input {
+            padding: 12px 14px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            font-size: 15px; font-weight: 600;
+            color: var(--text);
+            width: 100%;
+            transition: all 0.2s ease;
+            font-family: var(--font-mono), sans-serif;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.35;
+            text-transform: uppercase;
+        }
+
+        .field textarea:focus, .field input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            background: var(--card);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .field-hint { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+        .btn-print {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 800; font-size: 15px;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+            display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+            transition: all 0.18s ease;
+        }
+        .btn-print:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); }
+        .btn-print:active { transform: translateY(0); }
+        .btn-print:disabled {
+            background: var(--input-border);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-print svg { width: 17px; height: 17px; }
+
+        .btn-reset {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 12px; font-weight: 700;
+            cursor: pointer;
+            padding: 6px;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-reset:hover { color: var(--accent); }
+
+        .print-hint {
+            display: none;
+            font-size: 11.5px; line-height: 1.5;
+            color: var(--text-secondary);
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+        }
+
+        .mode-info { font-size: 11px; color: var(--text-muted); font-weight: 600; text-align: center; }
+
+        /* ---------- Aperçu ---------- */
+        .studio-header {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+        }
+
+        .studio-title-box { display: flex; align-items: center; gap: 10px; }
+        .studio-title-box h3 { font-size: 15px; font-weight: 800; }
+
+        .counter-badge {
+            font-size: 11px; font-weight: 800;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            background: var(--bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .studio-controls { display: flex; align-items: center; gap: 6px; }
+        .studio-controls .lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-right: 2px; }
+
+        .zoom-btn {
+            background: var(--bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-size: 11px; font-weight: 700;
+            padding: 5px 9px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+        }
+        .zoom-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        .studio-canvas {
+            background-image: var(--grid-dots);
+            background-size: 18px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+            min-height: 320px;
+            padding: 26px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .empty-preview-state {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            color: var(--text-muted); text-align: center; padding: 40px 20px;
+        }
+        .empty-preview-state svg { width: 34px; height: 34px; stroke-width: 1.5; }
+        .empty-preview-state p { font-size: 12.5px; font-weight: 600; max-width: 260px; line-height: 1.5; }
+
+        /* Étiquette réelle : 1,5 × 1 in = 38,1 × 25,4 mm */
+        .label-style {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 1.5in;
+            height: 1in;
+            background: #ffffff;
+            border: 1px dashed #94a3b8;
+            border-radius: 4px;
+            color: #000;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
+        }
+
+        .zoom-1 .label-style { transform: scale(1); }
+        .zoom-15 .label-style { transform: scale(1.4); margin: 18px 12px; }
+        .zoom-2 .label-style { transform: scale(1.8); margin: 32px 22px; }
+
+        .free-label {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            color: #000;
+            font-family: -apple-system, Arial, sans-serif;
+            font-weight: 800;
+            line-height: 1.12;
+            padding: 0 2px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .free-label div { width: 100%; white-space: nowrap; overflow: hidden; }
+
+        /* ---------- Toast ---------- */
+        .toast-msg {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: #0f172a; color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px; font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            max-width: 340px;
+        }
+        .toast-msg.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 960px) {
+            main.main-layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+            .header-content { padding: 10px 14px; }
+            .status-pill span.txt { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="brand-zone">
+                <div class="brand-logo">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7V5h16v2"></path><path d="M12 5v14"></path><path d="M9 19h6"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Étiquettes texte</span>
+                    <span class="brand-subtitle">Zebra LP 2824 Plus · 38 × 25 mm</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-pill" id="printerStatusPill" title="Statut de connexion">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="txt" id="printerStatusText">Détection…</span>
+                </div>
+                <button id="btnConnectUsb" class="btn-header-action" onclick="connectUsbPrinter()" style="display:none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V7"></path><circle cx="12" cy="5" r="2"></circle><path d="M8 13l4-4 4 4"></path><path d="M6 17a6 6 0 0 0 12 0"></path></svg>
+                    <span>Connecter USB</span>
+                </button>
+                <button class="theme-btn" onclick="toggleDarkMode()" title="Changer le thème">
+                    <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <section class="card">
+            <h2 class="card-title">Texte de l'étiquette</h2>
+
+            <div class="field">
+                <label for="free_text">Texte à imprimer</label>
+                <textarea id="free_text" rows="4" maxlength="200" placeholder="ex: RESERVE&#10;NE PAS TOUCHER"></textarea>
+                <span class="field-hint">Entrée = nouvelle ligne. La taille s'ajuste automatiquement.</span>
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+                <label for="free_qty">Nombre de copies</label>
+                <input type="number" id="free_qty" value="1" min="1" max="50" inputmode="numeric">
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+                <button id="btnPrint" class="btn-print" onclick="printLabels()" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span id="btnPrintText">IMPRIMER</span>
+                </button>
+
+                <div class="print-hint" id="printHint">
+                    ⚠️ <b>Impression navigateur :</b> papier <b>38 × 25 mm</b>, marges <b>Aucune</b>, échelle <b>100 %</b>.
+                </div>
+
+                <p class="mode-info" id="modeInfo"></p>
+
+                <button class="btn-reset" onclick="resetAll()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    <span>Effacer</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="studio-header">
+                <div class="studio-title-box">
+                    <h3>Aperçu</h3>
+                    <span class="counter-badge" id="previewCountBadge">0 étiquette</span>
+                </div>
+                <div class="studio-controls">
+                    <span class="lbl">Zoom :</span>
+                    <button class="zoom-btn active" onclick="setZoom('1', this)">1x</button>
+                    <button class="zoom-btn" onclick="setZoom('15', this)">1.5x</button>
+                    <button class="zoom-btn" onclick="setZoom('2', this)">2x</button>
+                </div>
+            </div>
+
+            <div class="studio-canvas zoom-1" id="studioCanvas">
+                <div id="emptyPreview" class="empty-preview-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="11" y2="16"></line></svg>
+                    <p>Tapez un texte pour voir l'étiquette 38 × 25 mm en vrai format.</p>
+                </div>
+                <div id="print-zone"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast-msg"></div>
+
+    <script>
+        /* =====================================================================
+           IMPRIMANTE : Zebra LP 2824 Plus, 203 dpi → étiquette 304 × 203 dots
+           1) WebUSB direct (ZPL brut)  2) Zebra Browser Print  3) navigateur
+           ===================================================================== */
+        const PRINTER = {
+            dpi: 203,
+            labelW: 304,              // 1,5 in en dots
+            labelH: 203,              // 1 in en dots
+            useLabelLength: false,    // true = ajoute ^LL203
+            utf8: true,
+            sdkFiles: ['BrowserPrint-3.1.250.min.js', 'BrowserPrint-3.0.216.min.js', 'BrowserPrint-1.0.4.min.js', 'BrowserPrint.min.js', 'browserprint.min.js'],
+            agentUrls: ['https://localhost:9101/available', 'http://localhost:9101/available']
+        };
+
+        let labelsToPrint = [];
+        let usbPrinterDevice = null;
+        let usbBulkOutEndpoint = null;
+
+        /* ---------- Petits utilitaires ---------- */
+        function escapeHtml(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        function setZoom(factor, btn) {
+            document.getElementById('studioCanvas').className = 'studio-canvas zoom-' + factor;
+            document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        /* ---------- Thème ---------- */
+        function initTheme() {
+            const saved = localStorage.getItem('etiquettes-theme');
+            if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+                updateThemeIcon(true);
+            } else {
+                updateThemeIcon(false);
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('etiquettes-theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeIcon');
+            if (!icon) return;
+            icon.innerHTML = isDark
+                ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>'
+                : '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>';
+        }
+
+        /* =====================================================================
+           MISE EN PAGE DU TEXTE LIBRE (aperçu HTML + ZPL identiques)
+           ===================================================================== */
+        const FREE_TEXT_SIZES = [60, 52, 44, 36, 30, 26, 22, 18, 15];  // hauteurs en dots
+        const LABEL_PAD = 8;                                            // marge interne 1 mm
+
+        function wrapWords(line, maxChars) {
+            const words = line.split(' ').filter(w => w.length);
+            if (!words.length) return [''];
+            const out = [];
+            let cur = '';
+            words.forEach(w0 => {
+                let word = w0;
+                while (word.length > maxChars) {          // mot plus large que la ligne : on le coupe
+                    if (cur) { out.push(cur); cur = ''; }
+                    out.push(word.slice(0, maxChars));
+                    word = word.slice(maxChars);
+                }
+                if (!cur) cur = word;
+                else if ((cur + ' ' + word).length <= maxChars) cur += ' ' + word;
+                else { out.push(cur); cur = word; }
+            });
+            if (cur) out.push(cur);
+            return out;
+        }
+
+        function freeTextLayout(text) {
+            const rawLines = String(text == null ? '' : text)
+                .replace(/\r/g, '').split('\n')
+                .map(l => l.replace(/\s+/g, ' ').trim())
+                .filter(l => l !== '');
+            if (!rawLines.length) return null;
+
+            const usableW = PRINTER.labelW - 2 * LABEL_PAD;
+            const usableH = PRINTER.labelH - 2 * LABEL_PAD;
+
+            const trySize = (h) => {
+                // Largeur moyenne estimée d'une majuscule : 0,65 × hauteur (large, pour ne jamais rogner)
+                const maxChars = Math.max(3, Math.floor(usableW / (0.65 * h)));
+                const lines = [];
+                rawLines.forEach(l => wrapWords(l, maxChars).forEach(x => lines.push(x)));
+                return { fontSize: h, lines: lines, lineH: Math.round(h * 1.15), maxChars: maxChars };
+            };
+
+            const fits = [];
+            FREE_TEXT_SIZES.forEach(h => {
+                const lay = trySize(h);
+                if (lay.lines.length * lay.lineH <= usableH) fits.push(lay);   // ordre : grande → petite
+            });
+            if (!fits.length) return trySize(FREE_TEXT_SIZES[FREE_TEXT_SIZES.length - 1]);
+
+            // Priorité : la plus grande taille où chaque ligne saisie reste entière ;
+            // si elle devient minuscule (< 24 dots ≈ 3 mm), on accepte une seule coupure.
+            const noSplit = fits.filter(l => l.lines.length === rawLines.length);
+            if (noSplit.length && noSplit[0].fontSize >= 24) return noSplit[0];
+
+            const oneSplit = fits.filter(l => l.lines.length <= rawLines.length + 1);
+            if (oneSplit.length) return oneSplit[0];
+
+            return noSplit[0] || fits[0];
+        }
+
+        function freeTextHtml(layout) {
+            const pt = (layout.fontSize * 72 / PRINTER.dpi).toFixed(2);
+            const lh = (layout.lineH / layout.fontSize).toFixed(3);
+            return `<div class="free-label" style="font-size:${pt}pt; line-height:${lh};">`
+                + layout.lines.map(l => `<div>${escapeHtml(l)}</div>`).join('')
+                + `</div>`;
+        }
+
+        /* ---------- ZPL ---------- */
+        function zplText(s, upper) {
+            let t = String(s == null ? '' : s).replace(/[\^~\\]/g, ' ').replace(/\s+/g, ' ').trim();
+            if (upper) t = t.toUpperCase();
+            return t;
+        }
+
+        function zplHeader() {
+            let s = '^XA\n';
+            if (PRINTER.utf8) s += '^CI28\n';
+            s += '^PW' + PRINTER.labelW + '\n';
+            if (PRINTER.useLabelLength) s += '^LL' + PRINTER.labelH + '\n';
+            return s;
+        }
+
+        function zplTexte(layout) {
+            const totalH = layout.lines.length * layout.lineH;
+            const startY = Math.max(0, Math.round((PRINTER.labelH - totalH) / 2));
+            let s = zplHeader();
+            layout.lines.forEach((line, i) => {
+                const y = startY + i * layout.lineH;
+                s += '^FO0,' + y + '^A0N,' + layout.fontSize + ',' + Math.round(layout.fontSize * 0.85)
+                   + '^FB' + PRINTER.labelW + ',1,0,C,0^FD' + zplText(line, true) + '^FS\n';
+            });
+            return s + '^XZ\n';
+        }
+
+        /* =====================================================================
+           GÉNÉRATION DE L'APERÇU
+           ===================================================================== */
+        function regenerate() {
+            const ta = document.getElementById('free_text');
+            const pz = document.getElementById('print-zone');
+            pz.innerHTML = '';
+            labelsToPrint = [];
+
+            const layout = freeTextLayout(ta.value);
+            if (layout) {
+                let qty = parseInt(document.getElementById('free_qty').value, 10);
+                if (!qty || qty < 1) qty = 1;
+                if (qty > 50) qty = 50;
+
+                const html = freeTextHtml(layout);
+                const zpl = zplTexte(layout);
+
+                for (let i = 0; i < qty; i++) {
+                    labelsToPrint.push({ html: html, zpl: zpl });
+                    const div = document.createElement('div');
+                    div.className = 'label-style';
+                    div.innerHTML = html;
+                    pz.appendChild(div);
+                }
+            }
+
+            const count = labelsToPrint.length;
+            document.getElementById('emptyPreview').style.display = count > 0 ? 'none' : 'flex';
+            document.getElementById('previewCountBadge').innerText = count + ' étiquette' + (count > 1 ? 's' : '');
+
+            const btn = document.getElementById('btnPrint');
+            btn.disabled = count === 0;
+            document.getElementById('btnPrintText').innerText =
+                count > 1 ? 'IMPRIMER LES ' + count + ' ÉTIQUETTES' : "IMPRIMER L'ÉTIQUETTE";
+
+            if (count > 0 && !usbPrinterDevice && bpState !== true) {
+                document.getElementById('printHint').style.display = 'block';
+            } else {
+                document.getElementById('printHint').style.display = 'none';
+            }
+            updatePrinterStatus();
+        }
+
+        function resetAll() {
+            document.getElementById('free_text').value = '';
+            document.getElementById('free_qty').value = '1';
+            regenerate();
+            document.getElementById('free_text').focus();
+        }
+
+        /* =====================================================================
+           WEBUSB (Chrome / Edge sur poste avec câble USB)
+           ===================================================================== */
+        async function initWebUsb() {
+            if (!navigator.usb) return;
+            const btn = document.getElementById('btnConnectUsb');
+            if (btn) btn.style.display = 'inline-flex';
+
+            navigator.usb.addEventListener('disconnect', (event) => {
+                if (usbPrinterDevice && event.device === usbPrinterDevice) {
+                    usbPrinterDevice = null;
+                    usbBulkOutEndpoint = null;
+                    if (btn) btn.style.display = 'inline-flex';
+                    updatePrinterStatus();
+                    showToast('Câble USB débranché.');
+                }
+            });
+
+            navigator.usb.addEventListener('connect', async (event) => {
+                if (event.device && event.device.vendorId === 0x0a5f) {
+                    await setupUsbPrinter(event.device, { silent: true });
+                }
+            });
+
+            try {
+                const devices = await navigator.usb.getDevices();
+                const zebra = devices.find(d => d.vendorId === 0x0a5f);
+                if (zebra) await setupUsbPrinter(zebra, { silent: true });
+            } catch (err) {
+                console.log('Recherche USB auto:', err);
+            }
+        }
+
+        async function connectUsbPrinter() {
+            if (!navigator.usb) {
+                alert('WebUSB nécessite Google Chrome ou Chromium.');
+                return;
+            }
+            try {
+                const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x0a5f }] });
+                await setupUsbPrinter(device);
+            } catch (err) {
+                console.log('Sélection USB annulée:', err);
+            }
+        }
+
+        async function setupUsbPrinter(device, opts) {
+            const silent = !!(opts && opts.silent);
+            try {
+                await device.open();
+                if (device.configuration === null) await device.selectConfiguration(1);
+                let outEp = null, ifaceId = 0;
+                for (const iface of device.configuration.interfaces) {
+                    for (const alt of iface.alternates) {
+                        for (const ep of alt.endpoints) {
+                            if (ep.direction === 'out' && ep.type === 'bulk') {
+                                outEp = ep.endpointNumber;
+                                ifaceId = iface.interfaceNumber;
+                                break;
+                            }
+                        }
+                        if (outEp !== null) break;
+                    }
+                    if (outEp !== null) break;
+                }
+                if (outEp === null) { outEp = 1; ifaceId = 0; }
+                await device.claimInterface(ifaceId);
+                usbPrinterDevice = device;
+                usbBulkOutEndpoint = outEp;
+
+                const btn = document.getElementById('btnConnectUsb');
+                if (btn) btn.style.display = 'none';
+                updatePrinterStatus();
+                showToast('✓ Imprimante Zebra connectée en direct via USB !');
+            } catch (err) {
+                console.warn("Erreur d'initialisation USB:", err);
+                updatePrinterStatus();
+                if (silent) return;
+                const errMsg = String(err && (err.message || err));
+                if (errMsg.includes('claimInterface') || errMsg.includes('busy') || err.name === 'SecurityError') {
+                    showToast("Imprimante USB occupée par le pilote système. Recliquez sur 'Connecter USB'.");
+                } else {
+                    showToast('Erreur USB : ' + errMsg);
+                }
+            }
+        }
+
+        async function printDirectUsb(zplString) {
+            if (!usbPrinterDevice || usbBulkOutEndpoint === null) throw new Error('Imprimante non initialisée');
+            const data = new TextEncoder().encode(zplString);
+            await usbPrinterDevice.transferOut(usbBulkOutEndpoint, data);
+            return true;
+        }
+
+        /* =====================================================================
+           ZEBRA BROWSER PRINT (service local sur le poste)
+           ===================================================================== */
+        let bpState = null;
+        let bpProbe = null;
+
+        function probeUrl(url) {
+            return new Promise(resolve => {
+                const ctrl = new AbortController();
+                const t = setTimeout(() => { ctrl.abort(); resolve(false); }, 1500);
+                fetch(url, { method: 'GET', cache: 'no-store', signal: ctrl.signal })
+                    .then(() => { clearTimeout(t); resolve(true); })
+                    .catch(() => { clearTimeout(t); resolve(false); });
+            });
+        }
+
+        function loadScript(src) {
+            return new Promise(resolve => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.onload = () => resolve(true);
+                s.onerror = () => resolve(false);
+                document.head.appendChild(s);
+            });
+        }
+
+        async function loadBrowserPrintSdk() {
+            if (window.BrowserPrint) return true;
+            for (const base of ['http://localhost:9101/', '']) {
+                for (const f of PRINTER.sdkFiles) {
+                    await loadScript(base + f);
+                    if (window.BrowserPrint) return true;
+                }
+            }
+            return !!window.BrowserPrint;
+        }
+
+        function bpReady() {
+            if (bpProbe) return bpProbe;
+            bpProbe = (async () => {
+                let reachable = false;
+                for (const url of PRINTER.agentUrls) {
+                    if (await probeUrl(url)) { reachable = true; break; }
+                }
+                if (!reachable) { bpState = false; return false; }
+                bpState = await loadBrowserPrintSdk();
+                return bpState;
+            })();
+            return bpProbe;
+        }
+
+        function bpGetPrinter() {
+            return new Promise((resolve, reject) => {
+                BrowserPrint.getDefaultDevice('printer', d => d ? resolve(d) : reject(new Error('aucune imprimante par défaut')), e => reject(new Error(String(e))));
+            });
+        }
+
+        async function directPrint(zpl) {
+            if (!await bpReady()) return false;
+            try {
+                const printer = await bpGetPrinter();
+                await new Promise((resolve, reject) => printer.send(zpl, resolve, e => reject(new Error(String(e)))));
+                return true;
+            } catch (e) {
+                console.warn('Browser Print:', e);
+                return 'error';
+            }
+        }
+
+        function updatePrinterStatus() {
+            const dot = document.getElementById('statusDot');
+            const txt = document.getElementById('printerStatusText');
+            const info = document.getElementById('modeInfo');
+
+            if (usbPrinterDevice) {
+                dot.className = 'status-dot active';
+                txt.innerText = 'Zebra USB prête';
+                if (info) info.innerText = 'Impression directe par câble USB (ZPL natif, 203 dpi)';
+            } else if (bpState === true) {
+                dot.className = 'status-dot active';
+                txt.innerText = 'Zebra Browser Print';
+                if (info) info.innerText = 'Impression directe via Zebra Browser Print (silencieux)';
+            } else if (bpState === false) {
+                dot.className = 'status-dot warning';
+                txt.innerText = 'Mode navigateur';
+                if (info) info.innerText = 'Impression standard — marges : Aucune, échelle : 100 %';
+            } else {
+                dot.className = 'status-dot';
+                txt.innerText = 'Détection…';
+                if (info) info.innerText = 'Recherche de connexion imprimante…';
+            }
+        }
+
+        /* =====================================================================
+           IMPRESSION NAVIGATEUR (repli, iframe calibrée 1,5 × 1 in)
+           ===================================================================== */
+        function browserPrint() {
+            const labelsHtml = labelsToPrint.map(l => `<div class="label">${l.html}</div>`).join('');
+
+            const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Impression étiquettes</title>
+<style>
+    @page { size: 1.5in 1in; margin: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #fff; }
+    .label {
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        width: 1.5in; height: 1in;
+        padding: 4px 6px;
+        overflow: hidden;
+        page-break-after: always;
+        box-sizing: border-box;
+    }
+    .label:last-child { page-break-after: auto; }
+    .free-label {
+        width: 100%; height: 100%;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        text-align: center;
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 800;
+        line-height: 1.12;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    .free-label div { width: 100%; white-space: nowrap; overflow: hidden; }
+    @media print { html, body { width: 1.5in !important; height: auto !important; margin: 0 !important; padding: 0 !important; } }
+</style></head>
+<body>${labelsHtml}</body></html>`;
+
+            let iframe = document.getElementById('print-frame');
+            if (iframe) iframe.remove();
+            iframe = document.createElement('iframe');
+            iframe.id = 'print-frame';
+            iframe.style.cssText = 'position:fixed;top:-1000px;left:0;width:200mm;height:100mm;border:none;';
+            document.body.appendChild(iframe);
+
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+
+            iframe.onload = () => {
+                setTimeout(() => {
+                    iframe.contentWindow.print();
+                    setTimeout(() => iframe.remove(), 2000);
+                }, 400);
+            };
+        }
+
+        /* =====================================================================
+           BOUTON IMPRIMER
+           ===================================================================== */
+        async function printLabels() {
+            if (!labelsToPrint.length) {
+                showToast("Tapez d'abord un texte.");
+                return;
+            }
+
+            const zpl = labelsToPrint.map(l => l.zpl).filter(Boolean).join('');
+
+            // 1. WebUSB direct
+            if (usbPrinterDevice && zpl) {
+                try {
+                    await printDirectUsb(zpl);
+                    showToast('✓ ' + labelsToPrint.length + ' étiquette(s) imprimée(s) via USB !');
+                    return;
+                } catch (err) {
+                    console.error("Erreur d'envoi USB:", err);
+                    alert("Erreur lors de l'envoi USB à l'imprimante :\n" + (err.message || err) + '\n\nVérifiez que le câble USB est bien branché.');
+                    return;
+                }
+            }
+
+            // 2. Zebra Browser Print
+            if (zpl) {
+                const res = await directPrint(zpl);
+                if (res === true) {
+                    showToast('✓ Envoyé directement à l\'imprimante Zebra !');
+                    return;
+                }
+                if (res === 'error') return;
+            }
+
+            // 3. Repli navigateur
+            updatePrinterStatus();
+            browserPrint();
+        }
+
+        /* ---------- Démarrage ---------- */
+        const ta = document.getElementById('free_text');
+        ta.addEventListener('input', regenerate);
+        document.getElementById('free_qty').addEventListener('input', regenerate);
+        ta.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); printLabels(); }
+        });
+
+        window.onload = () => {
+            initTheme();
+            regenerate();
+            initWebUsb();
+            bpReady().then(updatePrinterStatus);
+        };
+    </script>
+</body>
+</html>
